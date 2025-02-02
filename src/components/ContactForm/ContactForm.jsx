@@ -2,7 +2,6 @@ import styles from "./ContactForm.module.css";
 import { nanoid } from "nanoid";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
 
 const onlyNumber = /^[0-9\s-]+$/;
 const onlyLetters = /^[A-Za-zA-Яа-яЄєІіЇїҐґ\s]+$/;
@@ -21,15 +20,6 @@ const contactSchema = Yup.object().shape({
 });
 
 const ContactForm = ({ addContact }) => {
-  // const [savedValues] = useState(() => {
-  //   const saved = localStorage.getItem("ContactForm");
-  //   return saved ? JSON.parse(saved) : { name: "", number: "" };
-  // });
-
-  // useEffect(() => {
-  //   localStorage.setItem("ContactForm", JSON.stringify(savedValues));
-  // }, [savedValues]);
-
   const handleSubmit = (values, actions) => {
     console.log(values);
     const newContact = {
