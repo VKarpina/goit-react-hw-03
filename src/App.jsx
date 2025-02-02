@@ -1,45 +1,41 @@
-import Description from "./components/Description/Description";
-import Feedback from "./components/Feedback/Feedback";
-import Notification from "./components/Notification/Notification";
-import Options from "./components/Options/Options";
+import initialContacts from "./assets/initialContacts.json";
 import { useEffect, useState } from "react";
+import ContactForm from "./components/ContactForm/ContactForm";
+import ContactList from "./components/ContactList/ContactList";
+import SearchBox from "./components/SearchBox/SearchBox";
 
 const App = () => {
-  const [reviews, setReviews] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem("reviews"));
-    return savedData || { good: 0, neutral: 0, bad: 0 };
+  const [contacts, setContacts] = useState(() => {
+    return JSON.parse(localStorage.getItem("contacts")) ?? initialContacts;
   });
-  const totalFeedback = reviews.good + reviews.neutral + reviews.bad;
-  const positiveFeedback = Math.round((reviews.good / totalFeedback) * 100);
+  const [filter, setFilter] = useState("");
+
   useEffect(() => {
-    localStorage.setItem("reviews", JSON.stringify(reviews));
-  }, [reviews]);
-  const updateFeedback = (feedbackType) => {
-    setReviews((prev) => ({
-      ...prev,
-      [feedbackType]: prev[feedbackType] + 1,
-    }));
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
+
+  const addContact = (newContact) => {
+    setContacts((prevContact) => {
+      return [...prevContact, newContact];
+    });
   };
-  const handleReset = () => {
-    setReviews({ good: 0, neutral: 0, bad: 0 });
+
+  const deleteContact = (contactId) => {
+    setContacts((prevContact) => {
+      return prevContact.filter((contact) => contact.id !== contactId);
+    });
   };
+
+  const visibleContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <>
-      <Description />
-      <Options
-        handleReset={handleReset}
-        totalFeedback={totalFeedback}
-        updateFeedback={updateFeedback}
-      />
-      {totalFeedback > 0 ? (
-        <Feedback
-          {...reviews}
-          totalFeedback={totalFeedback}
-          positiveFeedback={positiveFeedback}
-        />
-      ) : (
-        <Notification />
-      )}
+      <h1>Phonebook</h1>
+      <ContactForm addContact={addContact} />
+      <SearchBox value={filter} onFilter={setFilter} />
+      <ContactList contact={visibleContacts} onDelete={deleteContact} />
     </>
   );
 };
